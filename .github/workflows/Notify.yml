@@ -18,9 +18,6 @@ jobs:
           # Brazil
           - model: "SM-M236B"
             region: "ZTO"
-          # India
-          - model: "SM-E236B"
-            region: "INS"
 
     steps:
       - name: Checkout repo
