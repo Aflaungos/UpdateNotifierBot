@@ -61,7 +61,9 @@ jobs:
       - name: Fetch firmware
         if: env.need_update == 1
         run: |
-          samfirm -m ${{ matrix.model }} -r ${{ matrix.region }}
+          if [[ "${{ matrix.model }}" == "SM-M236B" ]]; then
+              imei="350262401234563"
+          samfirm -m ${{ matrix.model }} -r ${{ matrix.region }} -i $imei
 
       - name: Get path of files
         if: env.need_update == 1
