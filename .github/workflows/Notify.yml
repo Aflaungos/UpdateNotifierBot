@@ -38,6 +38,52 @@ jobs:
           echo "latest_shortversion=$latest_short" >> $GITHUB_ENV
           echo "need_update=$need_update" >> $GITHUB_ENV
 
+      - name: Set up Node.js
+        if: env.need_update == 1
+        uses: actions/setup-node@v3
+        with:
+          node-version: 'latest'
+
+      - name: Set up Python 3
+        if: env.need_update == 1
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        if: env.need_update == 1
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y liblz4-tool zip simg2img f2fs-tools
+          sudo wget -O /usr/bin/samfirm https://github.com/DavidArsene/samfirm.js/releases/download/v0.3.0/samfirm.js && sudo chmod +x /usr/bin/samfirm
+
+      - name: Fetch firmware
+        if: env.need_update == 1
+        run: |
+          samfirm -m ${{ matrix.model }} -r ${{ matrix.region }}
+
+      - name: Get path of files
+        if: env.need_update == 1
+        run: |
+          echo "ap_tar=`find -name AP*`" >> $GITHUB_ENV
+          echo "bl_tar=`find -name BL*`" >> $GITHUB_ENV
+          echo "cp_tar=`find -name CP*`" >> $GITHUB_ENV
+          echo "csc_tar=`find -name CSC*`" >> $GITHUB_ENV
+          echo "home_csc_tar=`find -name HOME_CSC*`" >> $GITHUB_ENV
+
+      - name: Check downloaded firmware version
+        if: env.need_update == 1
+        run: |
+          version_short=`echo ${{ env.ap_tar }} | cut -d'_' -f3`
+          version_csc=`echo ${{ env.csc_tar }} | cut -d'_' -f4`
+          version_modem=`echo ${{ env.cp_tar }} | cut -d'_' -f3`
+          [[ $version_short == ${{ env.latest_shortversion }} ]]
+          [[ $version_csc == ${{ env.latest_cscversion }} ]]
+          [[ $version_modem == ${{ env.latest_modemversion }} ]]
+          echo PDA version: $version_short > versions.txt
+          echo CSC version: $version_csc >> versions.txt
+          echo Modem version: $version_modem >> versions.txt
+
       - name: Cleanup space
         if: env.need_update == 1
         run: |
