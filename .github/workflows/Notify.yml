@@ -63,6 +63,9 @@ jobs:
         run: |
           if [[ "${{ matrix.model }}" == "SM-M236B" ]]; then
               imei="350262401234563"
+          else
+              imei="35026240123456X"
+          fi
           samfirm -m ${{ matrix.model }} -r ${{ matrix.region }} -i $imei
 
       - name: Get path of files
