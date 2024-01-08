@@ -121,6 +121,8 @@ jobs:
           CHAT_ID: ${{ secrets.CHAT_ID_M23 }}
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+        run: |
+          echo "Notifying M23 Group..."
 
       - name: Start NotifierBot F23
         if: env.need_update == 1
@@ -128,3 +130,5 @@ jobs:
           CHAT_ID: ${{ secrets.CHAT_ID_F23 }}
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+        run: |
+          echo "Notifying F23 Group..."
