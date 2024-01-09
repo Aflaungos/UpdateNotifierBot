@@ -1,5 +1,4 @@
-name: Check firmware update
-
+name: Check firmware update, download, and notify group
 on:
   workflow_call:
   workflow_dispatch:
@@ -77,6 +76,61 @@ jobs:
           sudo apt-get clean
           sudo rm -rf /usr/local
 
+      - name: Extract kernel images
+        if: env.need_update == 1
+        env:
+          FILES: boot.img.lz4 dtbo.img.lz4 vbmeta.img.lz4
+        run: |
+          for file in $FILES; do tar xvf ${{ env.ap_tar }} ${file}; done
+          tar cvf ${{ env.latest_shortversion }}_kernel.tar *.lz4
+          rm *.lz4
+
+      - name: Extract PIT file
+        if: env.need_update == 1
+        run: |
+          tar --wildcards --exclude='*/*' -xvf ${{ env.csc_tar }} '*.pit'
+          echo "pit_file=`find -name *.pit`" >> $GITHUB_ENV
+
+      - name: Generate patched vbmeta
+        if: env.need_update == 1
+        run: |
+          tar xvf ${{ env.ap_tar }} vbmeta.img.lz4
+          lz4 -d vbmeta.img.lz4 vbmeta.img
+          rm vbmeta.img.lz4
+          printf "$(printf '\\x%02X' 3)" | dd of="vbmeta.img" bs=1 seek=123 count=1 conv=notrunc &> /dev/null
+          tar cvf ${{ env.latest_shortversion }}_patched_vbmeta.tar vbmeta.img
+          rm vbmeta.img
+
+      - name: Extract vendor partition
+        if: env.need_update == 1
+        run: |
+          tar xvf ${{ env.ap_tar }} super.img.lz4
+          lz4 -d super.img.lz4 super.img
+          rm super.img.lz4
+          simg2img super.img super_raw.img
+          rm super.img
+          mv super_raw.img super.img
+          python3 tools/bin/lpunpack.py -p vendor super.img .
+          rm super.img
+          [[ -e vendor.img.ext4 ]] && mv vendor.img.ext4 vendor.img
+          [[ -e vendor.img ]] && zip ${{ env.latest_shortversion }}_vendor.zip vendor.img
+          [[ -e vendor.img ]] && rm vendor.img
+
+      - name: Extract system partition
+        if: env.need_update == 1
+        run: |
+          tar xvf ${{ env.ap_tar }} super.img.lz4
+          lz4 -d super.img.lz4 super.img
+          rm super.img.lz4
+          simg2img super.img super_raw.img
+          rm super.img
+          mv super_raw.img super.img
+          python3 tools/bin/lpunpack.py -p system super.img .
+          rm super.img
+          [[ -e system.img.ext4 ]] && mv system.img.ext4 system.img
+          [[ -e system.img ]] && zip ${{ env.latest_shortversion }}system.zip system.img
+          [[ -e system.img ]] && rm system.img
+
       - name: Update current version
         if: env.need_update == 1
         run: |
@@ -99,20 +153,75 @@ jobs:
           tags: true
           github_token: ${{ secrets.TOKEN }}
 
-      - name: Start NotifierBot M23
+      - name: Upload release assets
         if: env.need_update == 1
+        uses: softprops/action-gh-release@v1
         env:
-          CHAT_ID: ${{ secrets.CHAT_ID_M23 }}
-          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
-        run: |
-          echo "Notifying M23 Group..."
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        with:
+          body_path: versions.txt
+          tag_name: "${{ env.latest_shortversion }}_${{ matrix.region }}"
+          name: "${{ env.latest_shortversion }} - ${{ matrix.model }} - ${{ matrix.region }}"
+          files: |
+            ${{ env.bl_tar }}
+            ${{ env.ap_tar }}
+            ${{ env.cp_tar }}
+            ${{ env.csc_tar }}
+            ${{ env.home_csc_tar }}
+            ${{ env.latest_shortversion }}_kernel.tar
+            ${{ env.pit_file }}
+            ${{ env.latest_shortversion }}_patched_vbmeta.tar
+            ${{ env.latest_shortversion }}_vendor.zip
+            ${{ env.latest_shortversion }}_system.zip
+
+      - name: Start NotifierBot M23
+        uses: appleboy/telegram-action@master
+        if: env.need_update == 1
+        with:
+          to: ${{ secrets.CHAT_ID_M23 }}
+          token: ${{ secrets.BOT_TOKEN }}
+          run: |
+            # Extract the variant string from the tag
+            variant_string=${{ github.tag | awk -F'_' '{print $2}' }}
+            base_tag=${{ github.tag | awk -F'_' '{print $1}' }}
+            
+            download_url=https://github.com/${{ github.repository }}/tags/${{github.tag}}
+            if [[ "$variant_string" == "ZTO" ]]; then
+              download_url=$download_url/${base_tag}_ZTO
+            elif [[ "$variant_string" == "INS" ]]; then
+              download_url=$download_url/${base_tag}_INS
+            else
+              echo "Unsupported variant or base tag: $variant_string $base_tag"
+            exit 1
+            fi
+          message: |
+            New Update for Samsung Galaxy M23
+            Commit message: ${{ github.event.commits[0].message }}
+            
+            DOWNLOAD: https://github.com/${{ github.repository }}/tags/${{github.tag}}
 
       - name: Start NotifierBot F23
+        uses: appleboy/telegram-action@master
         if: env.need_update == 1
-        env:
-          CHAT_ID: ${{ secrets.CHAT_ID_F23 }}
-          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
-        run: |
-          echo "Notifying F23 Group..."
+        with:
+          to: ${{ secrets.CHAT_ID_F23 }}
+          token: ${{ secrets.BOT_TOKEN }}
+          run: |
+            # Extract the variant string from the tag
+            variant_string=${{ github.tag | awk -F'_' '{print $2}' }}
+            base_tag=${{ github.tag | awk -F'_' '{print $1}' }}
+            
+            download_url=https://github.com/${{ github.repository }}/tags/${{github.tag}}
+            if [[ "$variant_string" == "ZTO" ]]; then
+              download_url=$download_url/${base_tag}_ZTO
+            elif [[ "$variant_string" == "INS" ]]; then
+              download_url=$download_url/${base_tag}_INS
+            else
+              echo "Unsupported variant or base tag: $variant_string $base_tag"
+            exit 1
+            fi
+          message: |
+            New Update for Samsung Galaxy F23
+            Commit message: ${{ github.event.commits[0].message }}
+            
+            DOWNLOAD: https://github.com/${{ github.repository }}/tags/${{github.tag}}
