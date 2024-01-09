@@ -125,11 +125,11 @@ jobs:
           git config --local user.name "github-actions[bot]"
           git pull origin ${{github.ref}} --ff-only
           echo ${{ env.latest_version }} > LatestVersion_${{ matrix.model }}
-          git add LatestVersion_${{ matrix.model }}
+          git add .
           if [[ "${{ matrix.model }}" == "SM-M236B" ]]; then
-              git commit -m "Nova Atualização para o Samsung Galaxy M23! ${{ env.latest_version }}"
+              git commit -m "Atualização para o Samsung Galaxy M23 ${{ env.latest_version }}"
           else
-              git commit -m "New Update for Samsung Galaxy F23! ${{ env.latest_version }}"
+              git commit -m "Update for Samsung Galaxy F23 ${{ env.latest_version }}"
           fi
           git tag "${{ env.latest_shortversion }}_${{ matrix.region }}"
 
