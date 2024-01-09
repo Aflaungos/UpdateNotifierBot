@@ -181,10 +181,20 @@ jobs:
           to: ${{ secrets.CHAT_ID_M23 }}
           token: ${{ secrets.BOT_TOKEN }}
           run: |
-            # Extract the variant string from the tag
-            variant_string=${{ github.tag | awk -F'_' '{print $2}' }}
-            base_tag=${{ github.tag | awk -F'_' '{print $1}' }}
-            
+            # Create a temporary Bash script to extract the variant string and base tag
+            cat <<EOF > extract_variant.sh
+            #!/bin/bash
+            variant_string=\$(echo $1 | awk -F'_' '{print \$2}')
+            base_tag=\$(echo $1 | awk -F'_' '{print \$1}')
+            echo "variant_string=\$variant_string" >> $GITHUB_ENV
+            echo "base_tag=\$base_tag" >> $GITHUB_ENV
+            EOF
+            chmod +x extract_variant.sh
+
+            # Run the script to set the variables
+            ./extract_variant.sh ${{ github.tag }}
+
+            # Create a download_url for downloading the firmware
             download_url=https://github.com/${{ github.repository }}/tags/${{github.tag}}
             if [[ "$variant_string" == "ZTO" ]]; then
               download_url=$download_url/${base_tag}_ZTO
@@ -195,7 +205,7 @@ jobs:
             exit 1
             fi
           message: |
-            New Update for Samsung Galaxy M23
+            New Update for Samsung Galaxy M23!
             Commit message: ${{ github.event.commits[0].message }}
             
             DOWNLOAD: https://github.com/${{ github.repository }}/tags/${{github.tag}}
@@ -207,10 +217,20 @@ jobs:
           to: ${{ secrets.CHAT_ID_F23 }}
           token: ${{ secrets.BOT_TOKEN }}
           run: |
-            # Extract the variant string from the tag
-            variant_string=${{ github.tag | awk -F'_' '{print $2}' }}
-            base_tag=${{ github.tag | awk -F'_' '{print $1}' }}
-            
+            # Create a temporary Bash script to extract the variant string and base tag
+            cat <<EOF > extract_variant.sh
+            #!/bin/bash
+            variant_string=\$(echo $1 | awk -F'_' '{print \$2}')
+            base_tag=\$(echo $1 | awk -F'_' '{print \$1}')
+            echo "variant_string=\$variant_string" >> $GITHUB_ENV
+            echo "base_tag=\$base_tag" >> $GITHUB_ENV
+            EOF
+            chmod +x extract_variant.sh
+
+            # Run the script to set the variables
+            ./extract_variant.sh ${{ github.tag }}
+
+            # Create a download_url for downloading the firmware
             download_url=https://github.com/${{ github.repository }}/tags/${{github.tag}}
             if [[ "$variant_string" == "ZTO" ]]; then
               download_url=$download_url/${base_tag}_ZTO
@@ -221,7 +241,7 @@ jobs:
             exit 1
             fi
           message: |
-            New Update for Samsung Galaxy F23
+            New Update for Samsung Galaxy F23!
             Commit message: ${{ github.event.commits[0].message }}
             
             DOWNLOAD: https://github.com/${{ github.repository }}/tags/${{github.tag}}
