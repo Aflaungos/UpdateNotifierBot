@@ -50,14 +50,13 @@ jobs:
           sudo apt-get install -y liblz4-tool zip simg2img f2fs-tools
           sudo wget -O /usr/bin/samfirm https://github.com/DavidArsene/samfirm.js/releases/download/v0.3.0/samfirm.js && sudo chmod +x /usr/bin/samfirm
 
-      - name: Fetch firmware
+      - name: Fetch firmware M23
         run: |
-          if [[ "${{ matrix.model }}" == "SM-M236B" ]]; then
-              imei="350262401234564"
-          else
-              imei="357917271234563"
-          fi
-          samfirm -m ${{ matrix.model }} -r ${{ matrix.region }} -i $imei
+          samfirm -m ${{ matrix.model }} -r ${{ matrix.region }} -i 350262401234564
+
+      - name: Fetch firmware F23
+        run: |
+          samfirm -m ${{ matrix.model }} -r ${{ matrix.region }} -i 357917271234563
 
       - name: Get path of files
         run: |
