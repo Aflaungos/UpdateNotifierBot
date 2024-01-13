@@ -52,7 +52,12 @@ jobs:
 
       - name: Fetch firmware
         run: |
-          samfirm -m ${{ matrix.model }} -r ${{ matrix.region }} -i 350262401234564
+          if [[ "${{ matrix.model }}" == "SM-A528N" ]]; then
+              imei="350262401234564"
+          else
+              imei="357917271234563"
+          fi
+          samfirm -m ${{ matrix.model }} -r ${{ matrix.region }} -i $imei
 
       - name: Get path of files
         run: |
