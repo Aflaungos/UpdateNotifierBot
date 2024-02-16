@@ -124,20 +124,6 @@ jobs:
           [[ -e system.img ]] && zip ${{ env.latest_shortversion }}system.zip system.img
           [[ -e system.img ]] && rm system.img
 
-      - name: Update current version
-        run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git pull origin ${{github.ref}} --ff-only
-          echo ${{ env.latest_version }} > LatestVersion_${{ matrix.model }}
-          git add .
-          if [[ "${{ matrix.model }}" == "SM-M236B" ]]; then
-              git commit -m "Atualização para o Samsung Galaxy M23 ${{ env.latest_version }}"
-          else
-              git commit -m "Update for Samsung Galaxy F23 ${{ env.latest_version }}"
-          fi
-          git tag "${{ env.latest_shortversion }}_${{ matrix.region }}"
-
       - name: Upload release assets
         uses: softprops/action-gh-release@v1
         env:
