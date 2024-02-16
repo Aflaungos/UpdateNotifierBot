@@ -15,9 +15,6 @@ jobs:
           # Brazil
           - model: "SM-M236B"
             region: "ZTO"
-          # India
-          - model: "SM-E236B"
-            region: "INS"
 
     steps:
       - name: Checkout repo
@@ -52,12 +49,7 @@ jobs:
 
       - name: Fetch firmware M23
         run: |
-          if [[ "${{ matrix.model }}" == "SM-E236B" ]]; then
-              imei="357917271234563"
-          else
-              imei="350262401234564"
-          fi
-          samfirm -m ${{ matrix.model }} -r ${{ matrix.region }} -i $imei
+          samfirm -m ${{ matrix.model }} -r ${{ matrix.region }} -i 350262401234564
 
       - name: Get path of files
         run: |
