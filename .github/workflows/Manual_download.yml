@@ -59,6 +59,16 @@ jobs:
           echo "csc_tar=`find -name CSC*`" >> $GITHUB_ENV
           echo "home_csc_tar=`find -name HOME_CSC*`" >> $GITHUB_ENV
 
+      - name: Tag firmware version
+        if: env.need_update == 1
+        run: |
+          version_short=`echo ${{ env.ap_tar }} | cut -d'_' -f3`
+          version_csc=`echo ${{ env.csc_tar }} | cut -d'_' -f4`
+          version_modem=`echo ${{ env.cp_tar }} | cut -d'_' -f3`
+          echo PDA version: $version_short > versions.txt
+          echo CSC version: $version_csc >> versions.txt
+          echo Modem version: $version_modem >> versions.txt
+
       - name: Cleanup space
         run: |
           sudo apt-get remove --purge -y "php*" "dotnet*" "mysql*" "nodejs*" "clang*" "google*"
