@@ -135,15 +135,12 @@ jobs:
           name: "${{ env.latest_shortversion }} - ${{ matrix.model }} - ${{ matrix.region }}"
           files: |
             ${{ env.bl_tar }}
-            ${{ env.ap_tar }}
             ${{ env.cp_tar }}
-            ${{ env.csc_tar }}
             ${{ env.home_csc_tar }}
             ${{ env.latest_shortversion }}_kernel.tar
             ${{ env.pit_file }}
             ${{ env.latest_shortversion }}_patched_vbmeta.tar
             ${{ env.latest_shortversion }}_vendor.zip
-            ${{ env.latest_shortversion }}_system.zip
 
       - name: Start NotifierBot M23
         uses: appleboy/telegram-action@master
