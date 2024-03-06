@@ -177,37 +177,37 @@ jobs:
             
             DOWNLOAD: https://github.com/${{ github.repository }}/tags/${{github.tag}}
 
-      - name: Start NotifierBot F23
-        uses: appleboy/telegram-action@master
-        with:
-          to: ${{ secrets.CHAT_ID_F23 }}
-          token: ${{ secrets.BOT_TOKEN }}
-          run: |
-            # Create a temporary Bash script to extract the variant string and base tag
-            cat <<EOF > extract_variant.sh
-            #!/bin/bash
-            variant_string=\$(echo $1 | awk -F'_' '{print \$2}')
-            base_tag=\$(echo $1 | awk -F'_' '{print \$1}')
-            echo "variant_string=\$variant_string" >> $GITHUB_ENV
-            echo "base_tag=\$base_tag" >> $GITHUB_ENV
-            EOF
-            chmod +x extract_variant.sh
-
-            # Run the script to set the variables
-            ./extract_variant.sh ${{ github.tag }}
-
-            # Create a download_url for downloading the firmware
-            download_url=https://github.com/${{ github.repository }}/tags/${{github.tag}}
-            if [[ "$variant_string" == "ZTO" ]]; then
-              download_url=$download_url/${base_tag}_ZTO
-            elif [[ "$variant_string" == "INS" ]]; then
-              download_url=$download_url/${base_tag}_INS
-            else
-              echo "Unsupported variant or base tag: $variant_string $base_tag"
-            exit 1
-            fi
-          message: |
-            Download the latest update for Samsung Galaxy F23!
-            Commit message: ${{ github.event.commits[0].message }}
-            
-            DOWNLOAD: https://github.com/${{ github.repository }}/tags/${{github.tag}}
+#      - name: Start NotifierBot F23
+#        uses: appleboy/telegram-action@master
+#        with:
+#          to: ${{ secrets.CHAT_ID_F23 }}
+#          token: ${{ secrets.BOT_TOKEN }}
+#          run: |
+#            # Create a temporary Bash script to extract the variant string and base tag
+#            cat <<EOF > extract_variant.sh
+#            #!/bin/bash
+#            variant_string=\$(echo $1 | awk -F'_' '{print \$2}')
+#            base_tag=\$(echo $1 | awk -F'_' '{print \$1}')
+#            echo "variant_string=\$variant_string" >> $GITHUB_ENV
+#            echo "base_tag=\$base_tag" >> $GITHUB_ENV
+#            EOF
+#            chmod +x extract_variant.sh
+#
+#            # Run the script to set the variables
+#            ./extract_variant.sh ${{ github.tag }}
+#
+#            # Create a download_url for downloading the firmware
+#            download_url=https://github.com/${{ github.repository }}/tags/${{github.tag}}
+#            if [[ "$variant_string" == "ZTO" ]]; then
+#              download_url=$download_url/${base_tag}_ZTO
+#            elif [[ "$variant_string" == "INS" ]]; then
+#              download_url=$download_url/${base_tag}_INS
+#            else
+#              echo "Unsupported variant or base tag: $variant_string $base_tag"
+#            exit 1
+#            fi
+#          message: |
+#            Download the latest update for Samsung Galaxy F23!
+#            Commit message: ${{ github.event.commits[0].message }}
+#            
+#            DOWNLOAD: https://github.com/${{ github.repository }}/tags/${{github.tag}}
