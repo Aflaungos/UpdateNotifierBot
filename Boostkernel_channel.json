@@ -1,0 +1,13 @@
+{
+  "kernel": {
+    "name": "Boostkernel",
+    "version": "16",
+    "link": "https://github.com/Aflaungos/android_kernel_samsung_sm7225/releases",
+    "changelog_url": "https://github.com/Aflaungos/android_kernel_samsung_sm7225/releases/tag/141-refs%2Fheads%2Flineage-20.0-BoostKernel-m23xq",
+    "sha1": "sha1"
+  },
+  "support": {
+    "link": "https://t.me/MF23Group",
+    "donation": "donation_link"
+  }
+}
