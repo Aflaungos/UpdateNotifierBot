@@ -2,7 +2,7 @@
   "kernel": {
     "name": "⚙️🔥Boostkernel🔥⚙️",
     "version": "16",
-    "link": "https://github.com/Aflaungos/android_kernel_samsung_sm7225/releases/latest/download/https://github.com/Aflaungos/android_kernel_samsung_sm7225/releases/download/BoostKernel_GalaxyM23.zip",
+    "link": "https://github.com/Aflaungos/android_kernel_samsung_sm7225/releases/download/BoostKernel_GalaxyM23.zip",
     "changelog_url": "https://github.com/Aflaungos/android_kernel_samsung_sm7225/releases/latest/",
     "sha1": "sha1"
   },
