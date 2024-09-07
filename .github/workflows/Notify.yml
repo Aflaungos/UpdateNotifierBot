@@ -176,7 +176,6 @@ jobs:
             ${{ env.pit_file }}
             ${{ env.latest_shortversion }}_patched_vbmeta.tar
             ${{ env.latest_shortversion }}_vendor.zip
-            ${{ env.latest_shortversion }}_system.zip
 
       - name: Start NotifierBot M23
         uses: appleboy/telegram-action@master
