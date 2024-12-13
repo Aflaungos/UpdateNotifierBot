@@ -163,7 +163,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
         with:
-          body_path: versions.txt
           tag_name: "${{ env.latest_shortversion }}_${{ matrix.region }}"
           name: "${{ env.latest_shortversion }} - ${{ matrix.model }} - ${{ matrix.region }}"
           files: |
