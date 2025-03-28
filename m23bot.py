@@ -1,9 +1,10 @@
 import logging
 import requests
+import os
 from telegram import Update
-from telegram.ext import Updater, CommandHandler, CallbackContext
+from telegram.ext import Application, CommandHandler, CallbackContext
 
-TOKEN = "7743466912:AAElEgA_dyxmOSfwp8a2dfbrFmVyYpAyrW8"
+TOKEN = os.getenv("7743466912:AAElEgA_dyxmOSfwp8a2dfbrFmVyYpAyrW8")
 
 # GitHub raw URLs
 URLS = {
@@ -12,7 +13,7 @@ URLS = {
 }
 
 # Fetch version from GitHub
-def get_version(url):
+async def get_version(url):
     try:
         response = requests.get(url)
         response.raise_for_status()
@@ -22,21 +23,23 @@ def get_version(url):
         return "Failed to fetch version."
 
 # Command handler
-def version_command(update: Update, context: CallbackContext):
+async def version_command(update: Update, context: CallbackContext):
     command = update.message.text.lstrip("/")
     if command in URLS:
-        version = get_version(URLS[command])
-        update.message.reply_text(f"Latest {command.upper()} version: {version}")
+        version = await get_version(URLS[command])
+        await update.message.reply_text(f"Latest {command.upper()} version: {version}")
     else:
-        update.message.reply_text("Invalid command. Use /m23version or /f23version.")
+        await update.message.reply_text("Invalid command. Use /m23version or /f23version.")
 
 def main():
-    updater = Updater(TOKEN, use_context=True)
-    dp = updater.dispatcher
-    dp.add_handler(CommandHandler(["m23version", "f23version"], version_command))
+    app = Application.builder().token(TOKEN).build()
+    
+    # Add command handlers
+    app.add_handler(CommandHandler("m23version", version_command))
+    app.add_handler(CommandHandler("f23version", version_command))
 
-    updater.start_polling()
-    updater.idle()
+    # Start the bot
+    app.run_polling()
 
 if __name__ == "__main__":
     main()
