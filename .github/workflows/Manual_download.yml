@@ -1,8 +1,6 @@
 name: Force download firmware update, and notify M23 and F23 groups
 on:
-  workflow_call:
   workflow_dispatch:
-  push:
 
 jobs:
   update:
@@ -44,7 +42,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y liblz4-tool zip simg2img f2fs-tools
+          sudo apt-get install -y liblz4-tool zip f2fs-tools
           sudo wget -O /usr/bin/samfirm https://github.com/DavidArsene/samfirm.js/releases/download/v0.3.0/samfirm.js && sudo chmod +x /usr/bin/samfirm
 
       - name: Fetch firmware M23
