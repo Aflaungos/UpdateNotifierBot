@@ -60,7 +60,7 @@ jobs:
         if: env.need_update == 1
         run: |
           if [[ "${{ matrix.model }}" == "SM-E236B" ]]; then
-              imei="357917271234563"
+              imei="351542211234568"
           else
               imei="350262401234564"
           fi
