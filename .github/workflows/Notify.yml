@@ -16,6 +16,9 @@ jobs:
           # Brazil
           - model: "SM-M236B"
             region: "ZTO"
+          # India
+          - model: "SM-E236B"
+            region: "INS"
 
     steps:
       - name: Checkout repo
@@ -105,36 +108,6 @@ jobs:
           tar cvf ${{ env.latest_shortversion }}_patched_vbmeta.tar vbmeta.img
           rm vbmeta.img
 
-      - name: Extract vendor partition
-        if: env.need_update == 1
-        run: |
-          tar xvf ${{ env.ap_tar }} super.img.lz4
-          lz4 -d super.img.lz4 super.img
-          rm super.img.lz4
-          simg2img super.img super_raw.img
-          rm super.img
-          mv super_raw.img super.img
-          python3 tools/bin/lpunpack.py -p vendor super.img .
-          rm super.img
-          [[ -e vendor.img.ext4 ]] && mv vendor.img.ext4 vendor.img
-          [[ -e vendor.img ]] && zip ${{ env.latest_shortversion }}_vendor.zip vendor.img
-          [[ -e vendor.img ]] && rm vendor.img
-
-      - name: Extract system partition
-        if: env.need_update == 1
-        run: |
-          tar xvf ${{ env.ap_tar }} super.img.lz4
-          lz4 -d super.img.lz4 super.img
-          rm super.img.lz4
-          simg2img super.img super_raw.img
-          rm super.img
-          mv super_raw.img super.img
-          python3 tools/bin/lpunpack.py -p system super.img .
-          rm super.img
-          [[ -e system.img.ext4 ]] && mv system.img.ext4 system.img
-          [[ -e system.img ]] && zip ${{ env.latest_shortversion }}system.zip system.img
-          [[ -e system.img ]] && rm system.img
-
       - name: Update current version
         if: env.need_update == 1
         run: |
@@ -167,14 +140,12 @@ jobs:
           name: "${{ env.latest_shortversion }} - ${{ matrix.model }} - ${{ matrix.region }}"
           files: |
             ${{ env.bl_tar }}
-            ${{ env.ap_tar }}
             ${{ env.cp_tar }}
             ${{ env.csc_tar }}
             ${{ env.home_csc_tar }}
             ${{ env.latest_shortversion }}_kernel.tar
             ${{ env.pit_file }}
             ${{ env.latest_shortversion }}_patched_vbmeta.tar
-            ${{ env.latest_shortversion }}_vendor.zip
 
       - name: Start NotifierBot M23
         uses: appleboy/telegram-action@master
