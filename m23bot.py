@@ -4,7 +4,7 @@ import os
 from telegram import Update
 from telegram.ext import Application, CommandHandler, CallbackContext
 
-TOKEN = os.getenv("7743466912:AAElEgA_dyxmOSfwp8a2dfbrFmVyYpAyrW8")
+TOKEN = os.getenv(7743466912:AAElEgA_dyxmOSfwp8a2dfbrFmVyYpAyrW8)
 
 # GitHub raw URLs
 URLS = {
