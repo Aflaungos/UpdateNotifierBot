@@ -4,7 +4,12 @@ import os
 from telegram import Update
 from telegram.ext import Application, CommandHandler, CallbackContext
 
-TOKEN = os.getenv(7743466912:AAElEgA_dyxmOSfwp8a2dfbrFmVyYpAyrW8)
+# Get bot token from GitHub Secrets
+TOKEN = os.getenv("BOT_TOKEN")
+
+# Check if the token exists
+if not TOKEN:
+    raise ValueError("BOT_TOKEN environment variable is missing. Make sure it's set in GitHub Secrets.")
 
 # GitHub raw URLs
 URLS = {
@@ -32,6 +37,7 @@ async def version_command(update: Update, context: CallbackContext):
         await update.message.reply_text("Invalid command. Use /m23version or /f23version.")
 
 def main():
+    # Initialize the bot application
     app = Application.builder().token(TOKEN).build()
     
     # Add command handlers
