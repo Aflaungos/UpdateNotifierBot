@@ -1,9 +1,6 @@
 name: Check firmware update, download, and notify group
 on:
-  workflow_call:
   workflow_dispatch:
-  schedule:
-    - cron: "0 12 * * *"
 
 jobs:
   update:
